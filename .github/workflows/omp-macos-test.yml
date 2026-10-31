@@ -243,7 +243,8 @@ jobs:
           Linux binaries and the Windows WSL runtime are built on Ubuntu 26.04;
           compatibility with older Linux/WSL distributions is not established.
           Install/login to Oh My Pi 18.14.1+ separately on the server machine,
-          then Settings > Providers > Add provider > Oh My Pi > Refresh models.
+          then Settings > Providers > Add provider > Oh My Pi and enable it.
+          Models load automatically; no manual model refresh is required.
           Setup: https://github.com/bunkerlab-net/t3code/blob/${GITHUB_SHA}/docs/user/providers-omp.md
           EOF
 
