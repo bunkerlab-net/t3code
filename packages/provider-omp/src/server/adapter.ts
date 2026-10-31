@@ -676,6 +676,9 @@ export const makeOmpAdapterV2 = Effect.fn("makeOmpAdapterV2")(function* (
         });
         // Native event records share the stream's enclosing span.
         const handleEvent = Effect.fnUntraced(function* (event: OmpRpcRecord) {
+          // Native tool-roster info is routine mount chatter, not a chat warning.
+          // OMP separately informs the model; real warnings/errors still surface.
+          if (event.type === "notice" && event.level === "info" && event.source === "xdev") return;
           if (
             event.type === "notice" ||
             (event.type === "extension_ui_request" && event.method === "notify")

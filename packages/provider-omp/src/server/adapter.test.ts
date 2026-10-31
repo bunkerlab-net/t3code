@@ -51,7 +51,10 @@ const decode = Schema.decodeSync(
   Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)),
 );
 
-const setup = Effect.fn("OmpAdapterTest.setup")(function* (startupDialog = false) {
+const setup = Effect.fn("OmpAdapterTest.setup")(function* (
+  startupDialog = false,
+  startupNotices: ReadonlyArray<OmpRpcRecord> = [],
+) {
   const stdout = yield* Queue.unbounded<Uint8Array>();
   const commands = yield* Queue.unbounded<OmpRpcRecord>();
   const exit = yield* Deferred.make<ChildProcessSpawner.ExitCode>();
@@ -72,6 +75,7 @@ const setup = Effect.fn("OmpAdapterTest.setup")(function* (startupDialog = false
         maxFrameBytes: 1048576,
         maxReassembledFrameBytes: 67108864,
       });
+      for (const notice of startupNotices) yield* emit(notice);
       if (startupDialog)
         yield* emit({
           type: "extension_ui_request",
@@ -548,14 +552,24 @@ describe("Oh My Pi native adapter", () => {
     }).pipe(Effect.scoped, Effect.provide(layerTest)),
   );
 
-  it.effect("keeps slash commands intact and settles commands handled without an agent turn", () =>
+  it.effect("preserves command output and real warnings without xdev mount chatter", () =>
     Effect.gen(function* () {
-      const fake = yield* setup();
+      const fake = yield* setup(true, [
+        { type: "notice", level: "info", source: "xdev", message: "xd://: mounted mcp__startup" },
+      ]);
       yield* start(fake.runtime, fake.thread, 1, "/help", [
         { key: "host", text: "T3 host context" },
       ]);
       const prompt = yield* fake.takeCommand("prompt");
       assert.equal(prompt.message, "/help");
+      for (const notice of [
+        { level: "info", source: "xdev", message: "xd://: mounted mcp__live" },
+        { level: "warning", source: "xdev", message: "Device availability warning" },
+        { level: "error", source: "xdev", message: "Device failure" },
+        { level: "info", source: "other", message: "Other provider information" },
+        { level: "info", message: "Unclassified provider information" },
+      ])
+        yield* fake.emit({ type: "notice", ...notice });
       yield* fake.emit({
         type: "extension_ui_request",
         id: "help",
@@ -573,6 +587,25 @@ describe("Oh My Pi native adapter", () => {
       const terminal = yield* fake.takeEvent((event) => event.type === "turn.terminal");
       assert.isTrue(terminal.type === "turn.terminal" && terminal.status === "completed");
       assert.isFalse(yield* fake.runtime.hasPendingBackgroundWork!);
+      // Startup mount info must not become a sticky warning on later commands.
+      yield* start(fake.runtime, fake.thread, 2, "/mcp");
+      const second = yield* fake.takeCommand("prompt");
+      yield* fake.respond(second, { agentInvoked: false });
+      yield* fake.takeEvent((event) => event.type === "turn.terminal");
+      assert.deepEqual(
+        fake.observed.flatMap((event) =>
+          event.type === "turn_item.updated" && event.turnItem.type === "system_notice"
+            ? [event.turnItem.message]
+            : [],
+        ),
+        [
+          "Device availability warning",
+          "Device failure",
+          "Other provider information",
+          "Unclassified provider information",
+          "Native command help",
+        ],
+      );
     }).pipe(Effect.scoped, Effect.provide(layerTest)),
   );
 
