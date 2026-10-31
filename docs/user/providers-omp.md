@@ -13,10 +13,11 @@ through its native RPC UI protocol. It does not use an ACP bridge.
    ```
 
 2. Run `omp` in a terminal and use `/login`, or configure your model provider's API key.
+   Select a default model in Oh My Pi.
 3. In the web or desktop app, open **Settings → Providers → Add provider → Oh My Pi**.
-   Enable it, then use **Refresh models** to discover the
-   models available to your installation. The default model follows Oh My Pi's configuration;
-   custom models use `provider/model` identifiers.
+   Enable it. T3 Code automatically discovers the authenticated models available to your
+   installation and keeps the list up to date during provider health checks. The default model
+   follows Oh My Pi's configuration; custom models use `provider/model` identifiers.
 
 If `omp` is not on the server's `PATH`, set its **Binary path**. Login and updates happen on the
 server machine, even when you connect from a phone or another computer. After setup in the web or
@@ -29,8 +30,11 @@ can select a different configuration, including `PI_CODING_AGENT_DIR` for a sepa
 directory. Mark API keys and other secret environment values as sensitive. T3 Code owns the RPC
 mode, session selection, and approval mode; launch arguments cannot override those controls.
 
-Model refresh opens a temporary Oh My Pi session and can load its configured extensions and MCP
-servers. Background availability checks only check the executable's version.
+Automatic model discovery opens a temporary, non-persistent Oh My Pi session and can load its
+configured extensions and MCP servers. If you sign in or change credentials outside T3 Code,
+the next provider health check discovers the updated models; **Refresh provider status** in
+Settings → Providers retries immediately. A discovery failure displays a warning and retains
+previously discovered models rather than replacing them with a fabricated catalog.
 
 ## Permissions and sessions
 

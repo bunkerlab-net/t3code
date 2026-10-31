@@ -3,11 +3,14 @@ run-name: Oh My Pi desktop tests · ${{ github.sha }}
 
 # Fork-only, artifact-only builds. No release, deployment, or signing secrets.
 # The narrow push trigger builds this feature branch without changing main or
-# opening a PR. Source-only pushes do not start another build automatically.
+# opening a PR. Provider and branding fixes also rebuild the downloadable apps.
 on:
   push:
     branches: [feat/native-oh-my-pi]
-    paths: [.github/workflows/omp-macos-test.yml]
+    paths:
+      - .github/workflows/omp-macos-test.yml
+      - packages/provider-omp/**
+      - third-party-licenses.config.json
   workflow_dispatch:
 
 permissions:

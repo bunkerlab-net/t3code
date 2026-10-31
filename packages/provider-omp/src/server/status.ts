@@ -16,6 +16,7 @@ import { buildOmpRpcLaunch, resolveOmpLaunchArgs } from "./launch.ts";
 import { makeOmpRpcConnection, OmpRpcError } from "./rpc.ts";
 import * as ChildProcess from "effect/process/ChildProcess";
 import {
+  AUTH_PROBE_TIMEOUT_MS,
   buildServerProvider,
   isCommandMissingCause,
   parseGenericCliVersion,
@@ -35,7 +36,7 @@ const PRESENTATION = {
   supportedRuntimeModes: ["approval-required", "auto-accept-edits", "full-access"],
 } as const;
 
-export interface OmpCatalog {
+interface OmpCatalog {
   readonly models: ReadonlyArray<ServerProviderModel>;
   readonly slashCommands: ReadonlyArray<ServerProviderSlashCommand>;
 }
@@ -82,7 +83,7 @@ export function parseOmpCatalog(models: unknown, commands: unknown): OmpCatalog 
         },
       ];
     }),
-    // Explicit model refresh has server cwd, not the viewing project's command scope.
+    // Provider discovery has server cwd, not the viewing project's command scope.
     slashCommands: available.commands
       .filter((command) => command.source === "builtin")
       .map(({ name, description, input }) => ({
@@ -142,10 +143,11 @@ export const buildInitialOmpProviderSnapshot = Effect.fn("buildInitialOmpProvide
 export const checkOmpProviderStatus = Effect.fn("checkOmpProviderStatus")(function* (
   settings: OmpSettings,
   environment: NodeJS.ProcessEnv,
-  catalog?: OmpCatalog,
+  cwd?: string,
 ) {
   const checkedAt = DateTime.formatIso(yield* DateTime.now);
-  const finish = (probe: ProviderProbeResult) => snapshot(settings, checkedAt, probe, catalog);
+  const finish = (probe: ProviderProbeResult, catalog?: OmpCatalog) =>
+    snapshot(settings, checkedAt, probe, catalog);
   if (!settings.enabled)
     return finish({
       installed: false,
@@ -211,37 +213,46 @@ export const checkOmpProviderStatus = Effect.fn("checkOmpProviderStatus")(functi
       auth: { status: "unknown" },
       message: `Oh My Pi ${MINIMUM_OMP_VERSION} or newer is required. Update Oh My Pi using its installer.`,
     });
-  return finish({
-    installed: true,
-    version,
-    status: catalog !== undefined && catalog.models.length === 0 ? "warning" : "ready",
-    auth: {
-      status:
-        catalog === undefined
-          ? "unknown"
-          : catalog.models.length > 0
-            ? "authenticated"
-            : "unauthenticated",
-      type: "omp",
-    },
-    ...(catalog === undefined
-      ? {
-          message:
-            "Oh My Pi is available. Sign in using omp in a terminal; refresh models to load its catalog.",
-        }
-      : catalog.models.length === 0
+  // The managed status check runs at startup, on settings changes and on the
+  // existing health-check cadence, so the selector never needs a manual refresh.
+  const discovery = yield* discoverOmpCatalog(settings, environment, cwd).pipe(
+    Effect.timeoutOption(AUTH_PROBE_TIMEOUT_MS),
+    Effect.result,
+  );
+  if (Result.isFailure(discovery) || Option.isNone(discovery.success))
+    return finish({
+      installed: true,
+      version,
+      status: "warning",
+      auth: { status: "unknown", type: "omp" },
+      message:
+        "Could not discover Oh My Pi models. Sign in or configure an API key and select a default model using omp in a terminal. T3 Code will retry automatically; Refresh provider status retries now.",
+    });
+  const catalog = discovery.success.value;
+  return finish(
+    {
+      installed: true,
+      version,
+      status: catalog.models.length === 0 ? "warning" : "ready",
+      auth: {
+        status: catalog.models.length > 0 ? "authenticated" : "unauthenticated",
+        type: "omp",
+      },
+      ...(catalog.models.length === 0
         ? {
             message:
-              "Oh My Pi has no available models. Sign in using omp in a terminal or configure an API key, then refresh models.",
+              "Oh My Pi has no available models. Sign in or configure an API key and select a default model using omp in a terminal. T3 Code will retry automatically; Refresh provider status retries now.",
           }
         : {}),
-  });
+    },
+    catalog,
+  );
 });
 
-export const discoverOmpCatalog = Effect.fn("discoverOmpCatalog")(function* (
+const discoverOmpCatalog = Effect.fn("discoverOmpCatalog")(function* (
   settings: OmpSettings,
   environment: NodeJS.ProcessEnv,
-  cwd: string,
+  cwd?: string,
 ) {
   const resolved = resolveOmpLaunchArgs(settings.launchArgs);
   if (!resolved.ok)

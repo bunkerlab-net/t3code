@@ -21,12 +21,7 @@ import {
 import type { ProviderTextGeneration } from "@t3tools/provider-core/server/textGeneration";
 import { OmpSettings } from "../settings.ts";
 import { OmpAdapterV2Driver, type OmpAdapterV2DriverEnv } from "./adapter.ts";
-import {
-  buildInitialOmpProviderSnapshot,
-  checkOmpProviderStatus,
-  discoverOmpCatalog,
-  type OmpCatalog,
-} from "./status.ts";
+import { buildInitialOmpProviderSnapshot, checkOmpProviderStatus } from "./status.ts";
 
 const decodeOmpSettings = Schema.decodeSync(OmpSettings);
 const DRIVER = ProviderDriverKind.make("omp");
@@ -80,7 +75,6 @@ export const OmpDriver: ProviderDriver<OmpSettings, OmpDriverEnv> = {
       continuationGroupKey: continuationIdentity.continuationKey,
     });
     const settings = yield* makeProviderSnapshotSettingsSource(config);
-    let catalog: OmpCatalog | undefined;
     const snapshot = yield* makeManagedServerProvider({
       resolveMaintenance: () => Effect.succeed(MAINTENANCE),
       getSettings: settings.getSettings,
@@ -88,9 +82,7 @@ export const OmpDriver: ProviderDriver<OmpSettings, OmpDriverEnv> = {
       haveSettingsChanged: haveProviderSnapshotSettingsChanged,
       initialSnapshot: (current) =>
         buildInitialOmpProviderSnapshot(current.provider).pipe(Effect.map(stampIdentity)),
-      checkProvider: Effect.suspend(() =>
-        checkOmpProviderStatus(config, environment, catalog),
-      ).pipe(
+      checkProvider: checkOmpProviderStatus(config, environment, host.paths.cwd).pipe(
         Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner),
         Effect.map(stampIdentity),
       ),
@@ -116,23 +108,6 @@ export const OmpDriver: ProviderDriver<OmpSettings, OmpDriverEnv> = {
           }),
       ),
     );
-    const refreshModels = Effect.fn("OmpDriver.refreshModels")(function* () {
-      if (!enabled) return;
-      const next = yield* discoverOmpCatalog(config, environment, host.paths.cwd).pipe(
-        Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner),
-        Effect.mapError(
-          (cause) =>
-            new ProviderDriverError({
-              driver: DRIVER,
-              instanceId,
-              detail: "Could not refresh Oh My Pi models. The previous catalog is unchanged.",
-              cause,
-            }),
-        ),
-      );
-      catalog = next;
-      yield* snapshot.refresh;
-    });
     return {
       instanceId,
       driverKind: DRIVER,
@@ -141,7 +116,6 @@ export const OmpDriver: ProviderDriver<OmpSettings, OmpDriverEnv> = {
       accentColor,
       enabled,
       snapshot,
-      refreshModels,
       orchestrationAdapter,
       textGeneration,
     } satisfies ProviderInstance;
