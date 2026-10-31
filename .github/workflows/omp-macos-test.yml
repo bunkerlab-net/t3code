@@ -221,7 +221,8 @@ jobs:
           set -euo pipefail
           cd release
           shopt -s nullglob
-          files=(*.dmg *.zip *.AppImage *.deb *.exe)
+          # The packager also emits a macOS app ZIP; distribute only the DMG.
+          files=(*.dmg *.AppImage *.deb *.exe)
           if command -v sha256sum >/dev/null 2>&1; then
             sha256sum "${files[@]}" > SHA256SUMS.txt
           else
@@ -254,7 +255,6 @@ jobs:
           name: T3-Oh-My-Pi-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             release/*.dmg
-            release/*.zip
             release/*.AppImage
             release/*.deb
             release/*.exe
