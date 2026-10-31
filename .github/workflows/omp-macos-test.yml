@@ -1,9 +1,9 @@
-name: Oh My Pi macOS Test Build
-run-name: Oh My Pi macOS test · ${{ github.sha }}
+name: Oh My Pi Desktop Test Builds
+run-name: Oh My Pi desktop tests · ${{ github.sha }}
 
 # Fork-only, artifact-only builds. No release, deployment, or signing secrets.
-# The narrow push trigger lets this feature branch build without changing main
-# or opening a PR. Subsequent source-only pushes do not start another build.
+# The narrow push trigger builds this feature branch without changing main or
+# opening a PR. Source-only pushes do not start another build automatically.
 on:
   push:
     branches: [feat/native-oh-my-pi]
@@ -11,25 +11,57 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
-  group: omp-macos-test-${{ github.ref }}
+  group: omp-desktop-test-${{ github.sha }}
   cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
     if: github.repository == 'bunkerlab-net/t3code'
-    name: macOS Apple Silicon
-    runs-on: macos-15
-    timeout-minutes: 60
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: macOS Apple Silicon
+            runner: macos-26
+            platform: mac
+            target: dmg
+            arch: arm64
+            rust_target: aarch64-apple-darwin
+          - label: Windows AMD64
+            runner: windows-2025
+            platform: win
+            target: nsis
+            arch: x64
+            rust_target: x86_64-pc-windows-msvc
+          - label: Linux ARM64
+            runner: ubuntu-26.04-arm
+            platform: linux
+            target: AppImage
+            arch: arm64
+            rust_target: aarch64-unknown-linux-gnu
+          - label: Linux AMD64
+            runner: ubuntu-26.04
+            platform: linux
+            target: AppImage
+            arch: x64
+            rust_target: x86_64-unknown-linux-gnu
     env:
       T3CODE_TELEMETRY_CHANNEL: dev
       T3CODE_DESKTOP_SIGNED: "false"
     steps:
       # Avoid checkout's submodule credential cleanup on the vendored gitlinks.
       - name: Checkout exact build commit
-        shell: bash
         env:
           CHECKOUT_REF: ${{ github.sha }}
           GIT_TERMINAL_PROMPT: "0"
@@ -50,24 +82,97 @@ jobs:
         uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
         with:
           toolchain: stable
-          targets: aarch64-apple-darwin
+          targets: ${{ matrix.rust_target }}
 
-      - name: Build unsigned preview DMG and ZIP
-        shell: bash
-        env:
-          BUILD_ARCH: arm64
+      - name: Install Linux packaging and smoke dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3 libsecret-1-dev pkg-config imagemagick patchelf libatomic1 xvfb xauth
+
+      - name: Set consistent preview version and public configuration
         run: |
           set -euo pipefail
           cp .env.example .env
           base_version="$(node -p "require('./apps/desktop/package.json').version")"
-          version="${base_version}-preview.$(date -u +%Y%m%d).${GITHUB_RUN_NUMBER}"
+          # Commit date, not the runner clock, keeps every architecture on the
+          # same version even when a run crosses midnight or a job is retried.
+          date_stamp="$(TZ=UTC git show -s --format=%cd --date=format:%Y%m%d HEAD)"
+          version="${base_version}-preview.${date_stamp}.${GITHUB_RUN_NUMBER}"
           echo "BUILD_VERSION=$version" >> "$GITHUB_ENV"
-          # The packager aligns compiled and staged versions and builds JS and
-          # native helpers. Preview versions have no automatic update feed.
-          vp run dist:desktop:artifact --platform mac --target dmg --arch "$BUILD_ARCH" --build-version "$version" --verbose
+          node scripts/update-release-package-versions.ts "$version"
 
-      - name: Launch packaged app against isolated test data
-        shell: bash
+      # Reuse the release pipeline's same-version Linux CLI archive for WSL.
+      # The native Windows build can install dependencies while Linux packages.
+      - name: Wait for Linux AMD64 CLI archive
+        if: matrix.platform == 'win'
+        shell: pwsh
+        timeout-minutes: 40
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          $headers = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
+          $run = "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+          function Test-Archive {
+            (Invoke-RestMethod -Headers $headers -Uri "$run/artifacts?name=cli-linux-x64").total_count -gt 0
+          }
+          while ($true) {
+            if (Test-Archive) { exit 0 }
+            $jobs = Invoke-RestMethod -Headers $headers -Uri "$run/attempts/$env:GITHUB_RUN_ATTEMPT/jobs?per_page=100"
+            $linux = $jobs.jobs | Where-Object { $_.name -eq 'Linux AMD64' } | Select-Object -First 1
+            if ($linux.conclusion) {
+              if (Test-Archive) { exit 0 }
+              throw "Linux AMD64 ended ($($linux.conclusion)) without the WSL archive."
+            }
+            Write-Host 'Waiting for cli-linux-x64...'
+            Start-Sleep -Seconds 15
+          }
+
+      - name: Download Linux AMD64 CLI archive for WSL
+        if: matrix.platform == 'win'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: cli-linux-x64
+          path: wsl-runtime
+
+      - name: Build unsigned desktop test artifacts
+        env:
+          BUILD_PLATFORM: ${{ matrix.platform }}
+          BUILD_TARGET: ${{ matrix.target }}
+          BUILD_ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          args=(--platform "$BUILD_PLATFORM" --target "$BUILD_TARGET" --arch "$BUILD_ARCH" --build-version "$BUILD_VERSION" --verbose)
+          if [[ "$BUILD_PLATFORM" == win ]]; then
+            args+=(--wsl-runtime "$PWD"/wsl-runtime/t3-*-linux-x64.tar.gz --keep-stage)
+          fi
+          # The existing packager builds JS/native helpers and validates native
+          # payloads. Preview versions have no automatic update feed.
+          vp run dist:desktop:artifact "${args[@]}"
+
+      - name: Build and verify Linux AMD64 CLI archive for WSL
+        if: matrix.platform == 'linux' && matrix.arch == 'x64'
+        run: |
+          set -euo pipefail
+          node apps/server/scripts/cli.ts build-exe --verbose
+          monitor_dir="$RUNNER_TEMP/cli-resource-monitor/linux-x64"
+          mkdir -p "$monitor_dir"
+          cp native/resource-monitor/target/x86_64-unknown-linux-gnu/release/t3-resource-monitor "$monitor_dir/"
+          node scripts/build-cli-archive.ts --platform linux --arch x64 --version "$BUILD_VERSION" --resource-monitor-dir "$RUNNER_TEMP/cli-resource-monitor" --output-dir release-cli
+          node scripts/smoke-cli-archive.ts --archive release-cli/* --expect-version "$BUILD_VERSION"
+
+      - name: Upload Linux AMD64 CLI archive for WSL
+        if: matrix.platform == 'linux' && matrix.arch == 'x64'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cli-linux-x64
+          path: release-cli/*
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Launch packaged macOS app
+        if: matrix.platform == 'mac'
         run: |
           set -euo pipefail
           mount="$RUNNER_TEMP/omp-test-dmg"
@@ -77,39 +182,78 @@ jobs:
           executable=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$app/Contents/Info.plist")
           node scripts/smoke-desktop-app.ts --artifacts-dir "$RUNNER_TEMP/desktop-launch-check" --executable "$app/Contents/MacOS/$executable"
 
+      - name: Launch packaged Linux app
+        if: matrix.platform == 'linux'
+        run: |
+          set -euo pipefail
+          appimage=$(ls "$GITHUB_WORKSPACE"/release/*.AppImage)
+          chmod +x "$appimage"
+          (cd "$RUNNER_TEMP" && "$appimage" --appimage-extract >/dev/null)
+          xvfb-run -a node scripts/smoke-desktop-app.ts --artifacts-dir "$RUNNER_TEMP/desktop-launch-check" --executable "$RUNNER_TEMP/squashfs-root/t3code"
+
+      - name: Launch packaged Windows app
+        if: matrix.platform == 'win'
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import { spawnSync } from 'node:child_process';
+          const stages = fs.readdirSync(os.tmpdir()).filter(name => name.startsWith('t3code-desktop-win-stage-'));
+          if (stages.length !== 1) throw new Error(`Expected one Windows staging directory; found ${stages.length}`);
+          const app = path.join(os.tmpdir(), stages[0], 'app', 'dist', 'win-unpacked');
+          const productName = JSON.parse(fs.readFileSync('apps/desktop/package.json', 'utf8')).productName;
+          const executable = path.join(app, `${productName}.exe`);
+          if (!fs.existsSync(executable)) throw new Error(`Desktop executable missing: ${executable}`);
+          const result = spawnSync(process.execPath, ['scripts/smoke-desktop-app.ts', '--executable', executable, '--artifacts-dir', path.join(process.env.RUNNER_TEMP, 'desktop-launch-check')], { stdio: 'inherit' });
+          process.exit(result.status ?? 1);
+          NODE
+
       - name: Add checksums and test notes
-        shell: bash
         env:
-          BUILD_ARCH: arm64
+          BUILD_PLATFORM: ${{ matrix.platform }}
+          BUILD_ARCH: ${{ matrix.arch }}
+          BUILD_RUNNER: ${{ matrix.runner }}
         run: |
           set -euo pipefail
           cd release
-          shasum -a 256 *.dmg *.zip > SHA256SUMS.txt
+          shopt -s nullglob
+          files=(*.dmg *.zip *.AppImage *.deb *.exe)
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum "${files[@]}" > SHA256SUMS.txt
+          else
+            shasum -a 256 "${files[@]}" > SHA256SUMS.txt
+          fi
           cat > TESTING.txt <<EOF
           Native Oh My Pi test build
           Commit: ${GITHUB_SHA}
           Version: ${BUILD_VERSION}
-          Architecture: ${BUILD_ARCH} (Apple Silicon only)
+          Platform / architecture: ${BUILD_PLATFORM} / ${BUILD_ARCH}
+          Built and launch-tested on: ${BUILD_RUNNER}
 
-          This is an unsigned, unnotarized test build, not an official release.
-          Automatic updates are disabled for this preview version.
-          It retains the normal T3 Code app name and bundle ID. Quit any other
-          T3 Code app and do not overwrite an existing installation. Keep this
-          app in a separate folder. T3CODE_HOME isolates backend data, but the
-          Electron profile remains shared at ~/Library/Application Support/t3code-v2.
-          Back up existing T3 data before testing; this is not a fully isolated app.
-          Install/login to Oh My Pi 18.14.1+ separately on your Mac, then add it
-          in Settings > Providers > Add provider > Oh My Pi and Refresh models.
+          These are unsigned test builds, not official releases. macOS builds
+          are not notarized. Automatic updates are disabled for this preview.
+          App names, bundle IDs and default profiles remain the normal T3 Code
+          ones. Quit other T3 apps, back up existing data, and do not overwrite
+          an existing installation. T3CODE_HOME isolates backend data but does
+          not isolate the Electron profile. This is not a fully isolated app.
+          Linux binaries and the Windows WSL runtime are built on Ubuntu 26.04;
+          compatibility with older Linux/WSL distributions is not established.
+          Install/login to Oh My Pi 18.14.1+ separately on the server machine,
+          then Settings > Providers > Add provider > Oh My Pi > Refresh models.
           Setup: https://github.com/bunkerlab-net/t3code/blob/${GITHUB_SHA}/docs/user/providers-omp.md
           EOF
 
       - name: Upload downloadable test build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: T3-Oh-My-Pi-macOS-arm64
+          name: T3-Oh-My-Pi-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             release/*.dmg
             release/*.zip
+            release/*.AppImage
+            release/*.deb
+            release/*.exe
             release/SHA256SUMS.txt
             release/TESTING.txt
           if-no-files-found: error
@@ -120,7 +264,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: omp-macos-launch-check-arm64
+          name: omp-launch-check-${{ matrix.platform }}-${{ matrix.arch }}
           path: ${{ runner.temp }}/desktop-launch-check
           if-no-files-found: ignore
           retention-days: 7
