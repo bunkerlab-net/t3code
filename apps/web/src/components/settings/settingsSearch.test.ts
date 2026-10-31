@@ -64,6 +64,8 @@ describe("searchSettings", () => {
     expect(searchSettings("sharing", ITEMS).map((item) => item.id)).toEqual(["network-access"]);
     expect(searchSettings("claude", ITEMS).map((item) => item.id)).toEqual(["providers"]);
     expect(searchSettings("long lines", ITEMS).map((item) => item.id)).toEqual(["word-wrap"]);
+    expect(searchSettings("oh my pi").map((item) => item.id)).toContain("providers");
+    expect(searchSettings("omp").map((item) => item.id)).toContain("providers");
   });
 
   it("hides the Secrets page from nav and search while the secrets feature is disabled", () => {

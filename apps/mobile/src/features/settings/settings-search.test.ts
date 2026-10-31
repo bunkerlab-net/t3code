@@ -48,6 +48,8 @@ describe("filterSettingsSections", () => {
     { query: "KEYBOARD", expected: [["Interface", ["Keyboard"]]] },
     { query: "dark mode", expected: [["Interface", ["Appearance"]]] },
     { query: "agent credits", expected: [["Server settings", ["Source control"]]] },
+    { query: "oh my pi", expected: [["Server settings", ["Provider accounts"]]] },
+    { query: "omp", expected: [["Server settings", ["Provider accounts"]]] },
     {
       query: "server settings",
       expected: [["Server settings", ["Provider accounts", "Source control"]]],

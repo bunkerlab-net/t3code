@@ -30,6 +30,10 @@ to you for approval. On fx, prompts it still sends also come to you.
 Muse Code offers only **Supervised** and **Full access**. A Muse thread already set to another mode
 runs in **Supervised**.
 
+[Oh My Pi](./providers-omp.md#permissions-and-sessions) maps **Supervised**, **Auto-accept edits**,
+and **Full access** to its native `always-ask`, `write`, and `yolo` policies. **Auto** is not
+offered and falls back to **Supervised**. Explicit Oh My Pi policies can still ask in **Full access**.
+
 T3 Code offers no **Auto-accept edits** or **Full access** for fx. An fx thread already set to either runs in
 **Supervised**.
 

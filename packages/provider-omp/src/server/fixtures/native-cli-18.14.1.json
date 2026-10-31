@@ -1,0 +1,1726 @@
+{
+  "providerVersion": "18.14.1",
+  "protocolVersion": 2,
+  "recording": "Real omp --mode rpc-ui --no-session, local scripted Anthropic SSE endpoint; no external credentials. Workspace paths sanitized.",
+  "scenarios": [
+    {
+      "prompt": "A deterministic native protocol probe.",
+      "promptId": "verify-prompt-5",
+      "records": [
+        {
+          "direction": "stdin",
+          "frame": {
+            "type": "prompt",
+            "id": "verify-prompt-5",
+            "message": "A deterministic native protocol probe."
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "id": "verify-prompt-5",
+            "type": "response",
+            "command": "prompt",
+            "success": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native protocol probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945705
+            },
+            "messageId": "msg-1"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native protocol probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945705
+            },
+            "messageId": "msg-1"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945760,
+              "responseId": "msg_fixture"
+            },
+            "messageId": "msg-2"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_start",
+              "contentIndex": 0,
+              "block": {
+                "type": "text",
+                "text": ""
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-2"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_delta",
+              "contentIndex": 0,
+              "delta": "Hello from the local deterministic fixture."
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-2"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_end",
+              "contentIndex": 0,
+              "content": "Hello from the local deterministic fixture.",
+              "block": {
+                "type": "text"
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-2"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945760,
+              "responseId": "msg_fixture",
+              "duration": 21.873735000000124,
+              "ttft": 19.76198199999999,
+              "completedAt": 1793456945785
+            },
+            "messageId": "msg-2"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945760,
+              "responseId": "msg_fixture",
+              "duration": 21.873735000000124,
+              "ttft": 19.76198199999999
+            },
+            "toolResults": []
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "extension_ui_request",
+            "id": "15bbe4a2a1c7e23c",
+            "method": "setWidget",
+            "widgetKey": "autoresearch"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_end",
+            "messages": [
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "A deterministic native protocol probe."
+                  }
+                ],
+                "attribution": "user",
+                "timestamp": 1793456945705
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Hello from the local deterministic fixture."
+                  }
+                ],
+                "api": "anthropic-messages",
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "usage": {
+                  "input": 8,
+                  "output": 6,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "totalTokens": 14,
+                  "cost": {
+                    "input": 2.4e-5,
+                    "output": 9e-5,
+                    "cacheRead": 0,
+                    "cacheWrite": 0,
+                    "total": 0.000114
+                  }
+                },
+                "stopReason": "stop",
+                "timestamp": 1793456945760,
+                "responseId": "msg_fixture",
+                "duration": 21.873735000000124,
+                "ttft": 19.76198199999999
+              }
+            ],
+            "isTerminal": true,
+            "yielded": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "prompt_result",
+            "id": "verify-prompt-5",
+            "agentInvoked": true,
+            "status": "completed",
+            "sessionSettled": true
+          }
+        }
+      ]
+    },
+    {
+      "prompt": "A deterministic native read-tool probe.",
+      "promptId": "verify-prompt-6",
+      "records": [
+        {
+          "direction": "stdin",
+          "frame": {
+            "type": "prompt",
+            "id": "verify-prompt-6",
+            "message": "A deterministic native read-tool probe."
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "session_settled"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "id": "verify-prompt-6",
+            "type": "response",
+            "command": "prompt",
+            "success": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native read-tool probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945801
+            },
+            "messageId": "msg-3"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native read-tool probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945801
+            },
+            "messageId": "msg-3"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-tool-1",
+                  "name": "read",
+                  "arguments": {
+                    "path": "proof.txt"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945806,
+              "responseId": "msg_fixture"
+            },
+            "messageId": "msg-4"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_start",
+              "contentIndex": 0,
+              "block": {
+                "type": "toolCall",
+                "id": "fixture-tool-1",
+                "name": "read",
+                "arguments": {}
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-4"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_delta",
+              "contentIndex": 0,
+              "delta": "{\"path\":\"proof.txt\"}"
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-4"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_end",
+              "contentIndex": 0,
+              "toolCall": {
+                "type": "toolCall",
+                "id": "fixture-tool-1",
+                "name": "read",
+                "arguments": {
+                  "path": "proof.txt"
+                }
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-4"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-tool-1",
+                  "name": "read",
+                  "arguments": {
+                    "path": "proof.txt"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945806,
+              "responseId": "msg_fixture",
+              "duration": 4.2684619999999995,
+              "ttft": 2.878417000000127,
+              "completedAt": 1793456945816
+            },
+            "messageId": "msg-4"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "tool_execution_start",
+            "toolCallId": "fixture-tool-1",
+            "toolName": "read",
+            "args": {
+              "path": "proof.txt"
+            }
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "tool_execution_end",
+            "toolCallId": "fixture-tool-1",
+            "toolName": "read",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Native read tool verified."
+                }
+              ],
+              "details": {
+                "totalLines": 1,
+                "rowPrefixes": false,
+                "displayContent": {
+                  "text": "Native read tool verified.",
+                  "startLine": 1,
+                  "lineNumbers": [1]
+                },
+                "fileSize": 27,
+                "meta": {
+                  "source": {
+                    "type": "path",
+                    "value": "/workspace/project/proof.txt"
+                  },
+                  "pagedSource": true
+                }
+              }
+            },
+            "isError": false
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "toolResult",
+              "toolCallId": "fixture-tool-1",
+              "toolName": "read",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Native read tool verified."
+                }
+              ],
+              "details": {
+                "totalLines": 1,
+                "rowPrefixes": false,
+                "displayContent": {
+                  "text": "Native read tool verified.",
+                  "startLine": 1,
+                  "lineNumbers": [1]
+                },
+                "fileSize": 27,
+                "meta": {
+                  "source": {
+                    "type": "path",
+                    "value": "/workspace/project/proof.txt"
+                  },
+                  "pagedSource": true
+                }
+              },
+              "isError": false,
+              "timestamp": 1793456945830
+            },
+            "messageId": "msg-5"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "toolResult",
+              "toolCallId": "fixture-tool-1",
+              "toolName": "read",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Native read tool verified."
+                }
+              ],
+              "details": {
+                "totalLines": 1,
+                "rowPrefixes": false,
+                "displayContent": {
+                  "text": "Native read tool verified.",
+                  "startLine": 1,
+                  "lineNumbers": [1]
+                },
+                "fileSize": 27,
+                "meta": {
+                  "source": {
+                    "type": "path",
+                    "value": "/workspace/project/proof.txt"
+                  },
+                  "pagedSource": true
+                }
+              },
+              "isError": false,
+              "timestamp": 1793456945830
+            },
+            "messageId": "msg-5"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-tool-1",
+                  "name": "read",
+                  "arguments": {
+                    "path": "proof.txt"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945806,
+              "responseId": "msg_fixture",
+              "duration": 4.2684619999999995,
+              "ttft": 2.878417000000127
+            },
+            "toolResults": [
+              {
+                "role": "toolResult",
+                "toolCallId": "fixture-tool-1",
+                "toolName": "read",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Native read tool verified."
+                  }
+                ],
+                "details": {
+                  "totalLines": 1,
+                  "rowPrefixes": false,
+                  "displayContent": {
+                    "text": "Native read tool verified.",
+                    "startLine": 1,
+                    "lineNumbers": [1]
+                  },
+                  "fileSize": 27,
+                  "meta": {
+                    "source": {
+                      "type": "path",
+                      "value": "/workspace/project/proof.txt"
+                    },
+                    "pagedSource": true
+                  }
+                },
+                "isError": false,
+                "timestamp": 1793456945830
+              }
+            ]
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945833,
+              "responseId": "msg_fixture"
+            },
+            "messageId": "msg-6"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_start",
+              "contentIndex": 0,
+              "block": {
+                "type": "text",
+                "text": ""
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-6"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_delta",
+              "contentIndex": 0,
+              "delta": "Hello from the local deterministic fixture."
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-6"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_end",
+              "contentIndex": 0,
+              "content": "Hello from the local deterministic fixture.",
+              "block": {
+                "type": "text"
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-6"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945833,
+              "responseId": "msg_fixture",
+              "duration": 3.4179189999999835,
+              "ttft": 2.8075410000001284,
+              "completedAt": 1793456945837
+            },
+            "messageId": "msg-6"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945833,
+              "responseId": "msg_fixture",
+              "duration": 3.4179189999999835,
+              "ttft": 2.8075410000001284
+            },
+            "toolResults": []
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "extension_ui_request",
+            "id": "15bbe4a2ac07e23d",
+            "method": "setWidget",
+            "widgetKey": "autoresearch"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_end",
+            "messages": [
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "A deterministic native read-tool probe."
+                  }
+                ],
+                "attribution": "user",
+                "timestamp": 1793456945801
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "toolCall",
+                    "id": "fixture-tool-1",
+                    "name": "read",
+                    "arguments": {
+                      "path": "proof.txt"
+                    }
+                  }
+                ],
+                "api": "anthropic-messages",
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "usage": {
+                  "input": 8,
+                  "output": 6,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "totalTokens": 14,
+                  "cost": {
+                    "input": 2.4e-5,
+                    "output": 9e-5,
+                    "cacheRead": 0,
+                    "cacheWrite": 0,
+                    "total": 0.000114
+                  }
+                },
+                "stopReason": "toolUse",
+                "timestamp": 1793456945806,
+                "responseId": "msg_fixture",
+                "duration": 4.2684619999999995,
+                "ttft": 2.878417000000127
+              },
+              {
+                "role": "toolResult",
+                "toolCallId": "fixture-tool-1",
+                "toolName": "read",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Native read tool verified."
+                  }
+                ],
+                "details": {
+                  "totalLines": 1,
+                  "rowPrefixes": false,
+                  "displayContent": {
+                    "text": "Native read tool verified.",
+                    "startLine": 1,
+                    "lineNumbers": [1]
+                  },
+                  "fileSize": 27,
+                  "meta": {
+                    "source": {
+                      "type": "path",
+                      "value": "/workspace/project/proof.txt"
+                    },
+                    "pagedSource": true
+                  }
+                },
+                "isError": false,
+                "timestamp": 1793456945830
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Hello from the local deterministic fixture."
+                  }
+                ],
+                "api": "anthropic-messages",
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "usage": {
+                  "input": 8,
+                  "output": 6,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "totalTokens": 14,
+                  "cost": {
+                    "input": 2.4e-5,
+                    "output": 9e-5,
+                    "cacheRead": 0,
+                    "cacheWrite": 0,
+                    "total": 0.000114
+                  }
+                },
+                "stopReason": "stop",
+                "timestamp": 1793456945833,
+                "responseId": "msg_fixture",
+                "duration": 3.4179189999999835,
+                "ttft": 2.8075410000001284
+              }
+            ],
+            "isTerminal": true,
+            "yielded": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "prompt_result",
+            "id": "verify-prompt-6",
+            "agentInvoked": true,
+            "status": "completed",
+            "sessionSettled": true
+          }
+        }
+      ]
+    },
+    {
+      "prompt": "A deterministic native approval-write probe.",
+      "promptId": "verify-prompt-7",
+      "records": [
+        {
+          "direction": "stdin",
+          "frame": {
+            "type": "prompt",
+            "id": "verify-prompt-7",
+            "message": "A deterministic native approval-write probe."
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "session_settled"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "id": "verify-prompt-7",
+            "type": "response",
+            "command": "prompt",
+            "success": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native approval-write probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945844
+            },
+            "messageId": "msg-7"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "A deterministic native approval-write probe."
+                }
+              ],
+              "attribution": "user",
+              "timestamp": 1793456945844
+            },
+            "messageId": "msg-7"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-write-1",
+                  "name": "write",
+                  "arguments": {
+                    "path": "proof-written.txt",
+                    "content": "Native approved write verified.\n"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945849,
+              "responseId": "msg_fixture"
+            },
+            "messageId": "msg-8"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_start",
+              "contentIndex": 0,
+              "block": {
+                "type": "toolCall",
+                "id": "fixture-write-1",
+                "name": "write",
+                "arguments": {}
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-8"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_delta",
+              "contentIndex": 0,
+              "delta": "{\"path\":\"proof-written.txt\",\"content\":\"Native approved write verified.\\n\"}"
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-8"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "toolcall_end",
+              "contentIndex": 0,
+              "toolCall": {
+                "type": "toolCall",
+                "id": "fixture-write-1",
+                "name": "write",
+                "arguments": {
+                  "path": "proof-written.txt",
+                  "content": "Native approved write verified.\n"
+                }
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-8"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-write-1",
+                  "name": "write",
+                  "arguments": {
+                    "path": "proof-written.txt",
+                    "content": "Native approved write verified.\n"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945849,
+              "responseId": "msg_fixture",
+              "duration": 2.726601999999957,
+              "ttft": 2.211810999999898,
+              "completedAt": 1793456945853
+            },
+            "messageId": "msg-8"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "tool_execution_start",
+            "toolCallId": "fixture-write-1",
+            "toolName": "write",
+            "args": {
+              "path": "proof-written.txt",
+              "content": "Native approved write verified.\n"
+            }
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "extension_ui_request",
+            "id": "15bbe4a2afc7e23e",
+            "method": "select",
+            "title": "Allow tool: write\nPath: proof-written.txt\nContent:\nNative approved write verified.\n",
+            "options": ["Approve", "Approve write for this session", "Deny"]
+          }
+        },
+        {
+          "direction": "stdin",
+          "frame": {
+            "type": "extension_ui_response",
+            "id": "15bbe4a2afc7e23e",
+            "value": "Approve"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "tool_execution_update",
+            "toolCallId": "fixture-write-1",
+            "toolName": "write",
+            "args": {
+              "path": "proof-written.txt",
+              "content": "Native approved write verified.\n"
+            },
+            "partialResult": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Writing 32 bytes to proof-written.txt..."
+                }
+              ],
+              "details": {
+                "resolvedPath": "/workspace/project/proof-written.txt"
+              }
+            }
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "tool_execution_end",
+            "toolCallId": "fixture-write-1",
+            "toolName": "write",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Successfully wrote 32 bytes to proof-written.txt"
+                }
+              ],
+              "details": {
+                "resolvedPath": "/workspace/project/proof-written.txt"
+              }
+            },
+            "isError": false
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "toolResult",
+              "toolCallId": "fixture-write-1",
+              "toolName": "write",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Successfully wrote 32 bytes to proof-written.txt"
+                }
+              ],
+              "details": {
+                "resolvedPath": "/workspace/project/proof-written.txt"
+              },
+              "isError": false,
+              "timestamp": 1793456945860
+            },
+            "messageId": "msg-9"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "toolResult",
+              "toolCallId": "fixture-write-1",
+              "toolName": "write",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Successfully wrote 32 bytes to proof-written.txt"
+                }
+              ],
+              "details": {
+                "resolvedPath": "/workspace/project/proof-written.txt"
+              },
+              "isError": false,
+              "timestamp": 1793456945860
+            },
+            "messageId": "msg-9"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "toolCall",
+                  "id": "fixture-write-1",
+                  "name": "write",
+                  "arguments": {
+                    "path": "proof-written.txt",
+                    "content": "Native approved write verified.\n"
+                  }
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "toolUse",
+              "timestamp": 1793456945849,
+              "responseId": "msg_fixture",
+              "duration": 2.726601999999957,
+              "ttft": 2.211810999999898
+            },
+            "toolResults": [
+              {
+                "role": "toolResult",
+                "toolCallId": "fixture-write-1",
+                "toolName": "write",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Successfully wrote 32 bytes to proof-written.txt"
+                  }
+                ],
+                "details": {
+                  "resolvedPath": "/workspace/project/proof-written.txt"
+                },
+                "isError": false,
+                "timestamp": 1793456945860
+              }
+            ]
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_start"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_start",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945862,
+              "responseId": "msg_fixture"
+            },
+            "messageId": "msg-10"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_start",
+              "contentIndex": 0,
+              "block": {
+                "type": "text",
+                "text": ""
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-10"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_delta",
+              "contentIndex": 0,
+              "delta": "Hello from the local deterministic fixture."
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-10"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_update",
+            "assistantMessageEvent": {
+              "type": "text_end",
+              "contentIndex": 0,
+              "content": "Hello from the local deterministic fixture.",
+              "block": {
+                "type": "text"
+              }
+            },
+            "message": {
+              "role": "assistant"
+            },
+            "messageId": "msg-10"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "message_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945862,
+              "responseId": "msg_fixture",
+              "duration": 3.000256000000036,
+              "ttft": 2.4688099999998485,
+              "completedAt": 1793456945866
+            },
+            "messageId": "msg-10"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "turn_end",
+            "message": {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Hello from the local deterministic fixture."
+                }
+              ],
+              "api": "anthropic-messages",
+              "provider": "anthropic",
+              "model": "claude-sonnet-4-5",
+              "usage": {
+                "input": 8,
+                "output": 6,
+                "cacheRead": 0,
+                "cacheWrite": 0,
+                "totalTokens": 14,
+                "cost": {
+                  "input": 2.4e-5,
+                  "output": 9e-5,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "total": 0.000114
+                }
+              },
+              "stopReason": "stop",
+              "timestamp": 1793456945862,
+              "responseId": "msg_fixture",
+              "duration": 3.000256000000036,
+              "ttft": 2.4688099999998485
+            },
+            "toolResults": []
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "extension_ui_request",
+            "id": "15bbe4a2b307e23f",
+            "method": "setWidget",
+            "widgetKey": "autoresearch"
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "agent_end",
+            "messages": [
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "A deterministic native approval-write probe."
+                  }
+                ],
+                "attribution": "user",
+                "timestamp": 1793456945844
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "toolCall",
+                    "id": "fixture-write-1",
+                    "name": "write",
+                    "arguments": {
+                      "path": "proof-written.txt",
+                      "content": "Native approved write verified.\n"
+                    }
+                  }
+                ],
+                "api": "anthropic-messages",
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "usage": {
+                  "input": 8,
+                  "output": 6,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "totalTokens": 14,
+                  "cost": {
+                    "input": 2.4e-5,
+                    "output": 9e-5,
+                    "cacheRead": 0,
+                    "cacheWrite": 0,
+                    "total": 0.000114
+                  }
+                },
+                "stopReason": "toolUse",
+                "timestamp": 1793456945849,
+                "responseId": "msg_fixture",
+                "duration": 2.726601999999957,
+                "ttft": 2.211810999999898
+              },
+              {
+                "role": "toolResult",
+                "toolCallId": "fixture-write-1",
+                "toolName": "write",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Successfully wrote 32 bytes to proof-written.txt"
+                  }
+                ],
+                "details": {
+                  "resolvedPath": "/workspace/project/proof-written.txt"
+                },
+                "isError": false,
+                "timestamp": 1793456945860
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Hello from the local deterministic fixture."
+                  }
+                ],
+                "api": "anthropic-messages",
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "usage": {
+                  "input": 8,
+                  "output": 6,
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "totalTokens": 14,
+                  "cost": {
+                    "input": 2.4e-5,
+                    "output": 9e-5,
+                    "cacheRead": 0,
+                    "cacheWrite": 0,
+                    "total": 0.000114
+                  }
+                },
+                "stopReason": "stop",
+                "timestamp": 1793456945862,
+                "responseId": "msg_fixture",
+                "duration": 3.000256000000036,
+                "ttft": 2.4688099999998485
+              }
+            ],
+            "isTerminal": true,
+            "yielded": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "prompt_result",
+            "id": "verify-prompt-7",
+            "agentInvoked": true,
+            "status": "completed",
+            "sessionSettled": true
+          }
+        },
+        {
+          "direction": "stdout",
+          "frame": {
+            "type": "session_settled"
+          }
+        }
+      ]
+    }
+  ]
+}

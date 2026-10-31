@@ -1036,23 +1036,31 @@ it.layer(
           { ...failedProvider, status: "error" },
         ] satisfies ReadonlyArray<ServerProvider>;
 
-        for (const provider of incompleteProviders) {
-          assert.deepStrictEqual(
-            ProviderRegistry.mergeProviderSnapshot(cachedProvider, provider).models,
-            [defaultModel, customModel, currentModel, removedModel],
-          );
+        for (const driver of [ProviderDriverKind.make("pi"), ProviderDriverKind.make("omp")]) {
+          for (const provider of incompleteProviders) {
+            assert.deepStrictEqual(
+              ProviderRegistry.mergeProviderSnapshot(
+                { ...cachedProvider, driver },
+                { ...provider, driver },
+              ).models,
+              [defaultModel, customModel, currentModel, removedModel],
+            );
+          }
         }
       });
 
       it("does not restore disconnected Pi models after a later discovery failure", () => {
-        const afterRemoval = ProviderRegistry.mergeProviderSnapshot(
-          cachedProvider,
-          refreshedProvider,
-        );
-        assert.deepStrictEqual(
-          ProviderRegistry.mergeProviderSnapshot(afterRemoval, failedProvider).models,
-          [defaultModel, customModel, currentModel],
-        );
+        for (const driver of [ProviderDriverKind.make("pi"), ProviderDriverKind.make("omp")]) {
+          const afterRemoval = ProviderRegistry.mergeProviderSnapshot(
+            { ...cachedProvider, driver },
+            { ...refreshedProvider, driver },
+          );
+          assert.deepStrictEqual(
+            ProviderRegistry.mergeProviderSnapshot(afterRemoval, { ...failedProvider, driver })
+              .models,
+            [defaultModel, customModel, currentModel],
+          );
+        }
       });
 
       it.effect(
