@@ -1,0 +1,126 @@
+name: Oh My Pi macOS Test Build
+run-name: Oh My Pi macOS test · ${{ github.sha }}
+
+# Fork-only, artifact-only builds. No release, deployment, or signing secrets.
+# The narrow push trigger lets this feature branch build without changing main
+# or opening a PR. Subsequent source-only pushes do not start another build.
+on:
+  push:
+    branches: [feat/native-oh-my-pi]
+    paths: [.github/workflows/omp-macos-test.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: omp-macos-test-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'bunkerlab-net/t3code'
+    name: macOS Apple Silicon
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      T3CODE_TELEMETRY_CHANNEL: dev
+      T3CODE_DESKTOP_SIGNED: "false"
+    steps:
+      # Avoid checkout's submodule credential cleanup on the vendored gitlinks.
+      - name: Checkout exact build commit
+        shell: bash
+        env:
+          CHECKOUT_REF: ${{ github.sha }}
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_REF"
+          git sparse-checkout set --no-cone '/*' '!/.repos/'
+          git checkout --detach FETCH_HEAD
+
+      - name: Setup build dependencies
+        uses: ./.github/actions/setup-ci-deps
+        with:
+          install-args: --filter=t3... --filter=@t3tools/web... --filter=@t3tools/desktop... --filter=@t3tools/scripts...
+
+      - name: Setup native Rust target
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
+          targets: aarch64-apple-darwin
+
+      - name: Build unsigned preview DMG and ZIP
+        shell: bash
+        env:
+          BUILD_ARCH: arm64
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          base_version="$(node -p "require('./apps/desktop/package.json').version")"
+          version="${base_version}-preview.$(date -u +%Y%m%d).${GITHUB_RUN_NUMBER}"
+          echo "BUILD_VERSION=$version" >> "$GITHUB_ENV"
+          # The packager aligns compiled and staged versions and builds JS and
+          # native helpers. Preview versions have no automatic update feed.
+          vp run dist:desktop:artifact --platform mac --target dmg --arch "$BUILD_ARCH" --build-version "$version" --verbose
+
+      - name: Launch packaged app against isolated test data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mount="$RUNNER_TEMP/omp-test-dmg"
+          hdiutil attach -nobrowse -readonly -mountpoint "$mount" "$(ls "$GITHUB_WORKSPACE"/release/*.dmg)"
+          trap 'hdiutil detach "$mount" -force >/dev/null || true' EXIT
+          app=$(ls -d "$mount"/*.app)
+          executable=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$app/Contents/Info.plist")
+          node scripts/smoke-desktop-app.ts --artifacts-dir "$RUNNER_TEMP/desktop-launch-check" --executable "$app/Contents/MacOS/$executable"
+
+      - name: Add checksums and test notes
+        shell: bash
+        env:
+          BUILD_ARCH: arm64
+        run: |
+          set -euo pipefail
+          cd release
+          shasum -a 256 *.dmg *.zip > SHA256SUMS.txt
+          cat > TESTING.txt <<EOF
+          Native Oh My Pi test build
+          Commit: ${GITHUB_SHA}
+          Version: ${BUILD_VERSION}
+          Architecture: ${BUILD_ARCH} (Apple Silicon only)
+
+          This is an unsigned, unnotarized test build, not an official release.
+          Automatic updates are disabled for this preview version.
+          It retains the normal T3 Code app name and bundle ID. Quit any other
+          T3 Code app and do not overwrite an existing installation. Keep this
+          app in a separate folder. T3CODE_HOME isolates backend data, but the
+          Electron profile remains shared at ~/Library/Application Support/t3code-v2.
+          Back up existing T3 data before testing; this is not a fully isolated app.
+          Install/login to Oh My Pi 18.14.1+ separately on your Mac, then add it
+          in Settings > Providers > Add provider > Oh My Pi and Refresh models.
+          Setup: https://github.com/bunkerlab-net/t3code/blob/${GITHUB_SHA}/docs/user/providers-omp.md
+          EOF
+
+      - name: Upload downloadable test build
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: T3-Oh-My-Pi-macOS-arm64
+          path: |
+            release/*.dmg
+            release/*.zip
+            release/SHA256SUMS.txt
+            release/TESTING.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload failed launch diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: omp-macos-launch-check-arm64
+          path: ${{ runner.temp }}/desktop-launch-check
+          if-no-files-found: ignore
+          retention-days: 7
