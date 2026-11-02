@@ -2,15 +2,10 @@ name: Oh My Pi Desktop Test Builds
 run-name: Oh My Pi desktop tests · ${{ github.sha }}
 
 # Fork-only, artifact-only builds. No release, deployment, or signing secrets.
-# The narrow push trigger builds this feature branch without changing main or
-# opening a PR. Provider and branding fixes also rebuild the downloadable apps.
+# Feature-branch pushes, including upstream syncs, validate and rebuild the apps.
 on:
   push:
     branches: [feat/native-oh-my-pi]
-    paths:
-      - .github/workflows/omp-macos-test.yml
-      - packages/provider-omp/**
-      - third-party-licenses.config.json
   workflow_dispatch:
 
 permissions:
@@ -26,7 +21,31 @@ defaults:
     shell: bash
 
 jobs:
+  validate:
+    if: github.repository == 'bunkerlab-net/t3code'
+    name: Validate native Oh My Pi integration
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact validation commit
+        env:
+          CHECKOUT_REF: ${{ github.sha }}
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_REF"
+          git sparse-checkout set --no-cone '/*' '!/.repos/'
+          git checkout --detach FETCH_HEAD
+      - uses: ./.github/actions/setup-ci-deps
+      - name: Check affected types
+        run: vp run --filter @t3tools/provider-omp --filter t3 --filter @t3tools/web --filter @t3tools/client-runtime --filter @t3tools/contracts typecheck
+      - name: Test native provider integration
+        run: vp test run --maxWorkers=2 packages/provider-omp apps/server/src/policy/ManagedPolicy.test.ts apps/server/src/provider/ProviderRegistry.test.ts apps/web/src/components/settings/settingsSearch.test.ts packages/contracts/src/settings.test.ts
+
   build:
+    needs: validate
     if: github.repository == 'bunkerlab-net/t3code'
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.runner }}
